@@ -20,14 +20,17 @@
     pkgs_ = genAttrs (builtins.attrNames inputs) (inp: genAttrs supportedSystems (sys: pkgsFor inputs."${inp}" sys));
 
     mkPkg = sys: num:
-      pkgs_.nixpkgs."${sys}".runCommandNoCC "foo${toString num}.txt" {} ''
-        sleep $(( 1 * ${toString num} ))
+      pkgs_.nixpkgs."${sys}".runCommandNoCC "test${toString num}.txt" {} ''
         echo ${toString builtins.currentTime} >> $out
       '';
   in
   {
     packages = forAllSystems (sys:
-      { test1 = mkPkg sys 1;}
+      {
+        test1 = mkPkg sys 1;
+        test2 = mkPkg sys 2;
+        test3 = mkPkg sys 3;
+      }
     );
 
     defaultPackage = forAllSystems (sys:
